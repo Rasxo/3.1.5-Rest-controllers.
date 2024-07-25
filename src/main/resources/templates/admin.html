@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Security Example</title>
+</head>
+<body>
+<h1>Welcome to Index PAGE!</h1>
+
+<h2>Список пользователей</h2>
+<hr>
+<br>
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>E-mail</th>
+            <th>Логин</th>
+            <th>Пароль</th>
+            <th>Роли</th>
+            <th>Изменение</th>
+            <th>Удаление</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td><span th:text="${user.getFirstName()}"></span></td>
+            <td><span th:text="${user.getLastName()}"></span></td>
+            <td><span th:text="${user.getEmail()}"></span></td>
+            <td><span th:text="${user.getUsername()}"></span></td>
+            <td><span th:text="${user.getPassword()}"></span></td>
+            <td><span th:text="${#strings.arrayJoin(user.getRoles(),' ')}"></span></td>
+            <td>
+                <button th:data-url="@{/admin/update(id=${user.getId()})}"
+                        onclick="document.location=this.getAttribute('data-url')">Изменить
+                </button>
+            </td>
+            <td>
+                <button th:data-url="@{/admin/delete(id=${user.getId()})}"
+                        onclick="document.location=this.getAttribute('data-url')">Удалить
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <hr>
+    <br>
+    <input type="button" value="Добавить" onclick="window.location.href = '/admin/create'">
+    <br>
+    <br>
+</div>
+
+<div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout"/>
+    </form>
+</div>
+
+</body>
+</html>

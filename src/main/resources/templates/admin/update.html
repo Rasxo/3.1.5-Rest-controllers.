@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение пользователя</title>
+</head>
+<body>
+<h2>Изменение пользователя</h2>
+<hr>
+<br>
+<div>
+    <form th:method="POST" th:action="@{/admin/update(id=${user.getId()})}" th:object="${user}">
+        <label for="firstName">Введите имя: </label>
+        <input type="text" th:field="*{firstName}" id="firstName"/>
+        <br>
+        <label for="lastName">Введите фамилию: </label>
+        <input type="text" th:field="*{lastName}" id="lastName"/>
+        <br>
+        <label for="email">Введите email: </label>
+        <input type="text" th:field="*{email}" id="email"/>
+        <br>
+        <label for="username">Введите логин: </label>
+        <input type="text" th:field="*{username}" id="username"/>
+        <br>
+        <label for="password">Введите пароль: </label>
+        <input type="text" th:field="*{password}" id="password"/>
+        <br>
+        <label for="roles">Выберите роли:</label>
+        <select multiple id="roles" th:field="*{roles}" >
+            <option th:each="role : ${roles}" th:value="${role.getId()}" th:text="${role.getName()}"></option>
+        </select>
+        <br>
+        <hr>
+        <br>
+        <input type="submit" value="Изменить"/>
+        <input type="button" value="Назад" onclick="window.location.href = '/admin'">
+        <br>
+        <br>
+    </form>
+</div>
+
+<div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout"/>
+    </form>
+</div>
+
+</body>
+</html>
