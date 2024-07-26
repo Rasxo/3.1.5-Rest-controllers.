@@ -1,12 +1,17 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +48,11 @@ public class User {
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    public User(String firstName, String lastName, String email, String username, String password, List<Role> roles) {
+        this(firstName, lastName, email, username, password);
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -99,5 +109,11 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 }

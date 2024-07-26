@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,27 +9,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.security.UserDetailsSecurity;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
-public class DefaultController {
+public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
 
 
-    public DefaultController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-    }
-
-    @GetMapping(value = "/user")
-    @PreAuthorize("hasRole('USER')")
-    public String getUserPage(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
-        model.addAttribute("user", ((UserDetailsSecurity) currentUser).getUser());
-        return "user";
     }
 
     @GetMapping(value = "/admin")
