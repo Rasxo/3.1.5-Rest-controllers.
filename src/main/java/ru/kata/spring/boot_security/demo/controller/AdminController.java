@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +29,9 @@ public class AdminController {
     }
 
     @GetMapping(value = "/admin")
-    public String printAllUsers(ModelMap model) {
+    public String printAllUsers(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("currentUser", currentUser);
         return "admin";
     }
 

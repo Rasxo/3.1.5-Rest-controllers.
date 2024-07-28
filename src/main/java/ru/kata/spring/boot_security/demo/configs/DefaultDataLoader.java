@@ -12,6 +12,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DefaultDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -37,8 +38,8 @@ public class DefaultDataLoader implements ApplicationListener<ContextRefreshedEv
         createRoleIfNotFound("ROLE_USER");
 
         List<Role> adminRoles = new ArrayList<>();
-        adminRoles.add(roleService.findByName("ROLE_ADMIN"));
-        adminRoles.add(roleService.findByName("ROLE_USER"));
+        adminRoles.add(roleService.findByName("ROLE_ADMIN").orElse(null));
+        adminRoles.add(roleService.findByName("ROLE_USER").orElse(null));
 
         User user = new User();
         user.setFirstName("admin");
@@ -54,9 +55,9 @@ public class DefaultDataLoader implements ApplicationListener<ContextRefreshedEv
 
     @Transactional
     void createRoleIfNotFound(String roleName) {
-        Role role = roleService.findByName(roleName);
-        if (role == null) {
-            role = new Role();
+        Optional<Role> optionalRole = roleService.findByName(roleName);
+        if (optionalRole.isEmpty()) {
+            Role role = new Role();
             role.setName(roleName);
             roleService.save(role);
         }

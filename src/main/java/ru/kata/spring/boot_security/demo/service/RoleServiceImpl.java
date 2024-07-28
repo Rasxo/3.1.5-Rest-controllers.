@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,13 +22,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role findByName(String name) {
-        return roleRepository.findByName(name).orElse(null);
+    public Optional<Role> findByName(String name) {
+        return roleRepository.findByName(name);
     }
 
     @Override
+    @Transactional
     public void save(Role role) {
-        if (findByName(role.getName()) == null) {
+        if (findByName(role.getName()).isEmpty()) {
             roleRepository.save(role);
         }
     }

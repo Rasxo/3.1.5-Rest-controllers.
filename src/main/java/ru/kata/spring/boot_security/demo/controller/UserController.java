@@ -22,6 +22,7 @@ public class UserController {
     public String getUserPage(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
         User user = userService.findByUsername(currentUser.getUsername());
         model.addAttribute("user", user);
+        model.addAttribute("currentUser", currentUser);
         return "user";
     }
 }
