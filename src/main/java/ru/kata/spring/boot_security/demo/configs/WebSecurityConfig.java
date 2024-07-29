@@ -30,10 +30,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/login?error").permitAll()
                         .anyRequest().hasAnyRole("USER", "ADMIN"))
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
+                        .failureUrl("/login?error")
                         .successHandler(successUserHandler).permitAll())
                 .logout(LogoutConfigurer::permitAll);
         return http.build();
