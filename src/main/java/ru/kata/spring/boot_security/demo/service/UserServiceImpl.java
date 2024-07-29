@@ -21,24 +21,29 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
+    @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
+    @Override
     @Transactional
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
+    @Override
     @Transactional
     public void update(Long id, User user) {
         Optional<User> oldUser = userRepository.findById(id);
@@ -53,6 +58,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
     @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
