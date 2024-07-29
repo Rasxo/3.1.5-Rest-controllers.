@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
 
+import java.util.Optional;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -19,12 +21,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("Пользователь не найден в базе данных");
+        Optional<User> user = userService.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException(username);
         }
 
-        return new User(user.getFirstName(), user.getLastName(), user.getEmail(), user.getUsername(),
-                user.getPassword(), user.getRoles());
+        return new User(user.get().getFirstName(), user.get().getLastName(), user.get().getEmail(),
+                user.get().getUsername(), user.get().getPassword(), user.get().getRoles());
     }
 }

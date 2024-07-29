@@ -14,6 +14,8 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.util.Optional;
+
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
@@ -43,8 +45,8 @@ public class AdminController {
 
     @PostMapping("/admin/add")
     public String addUser(@ModelAttribute("user") User user) {
-        User userFromDB = userService.findByUsername(user.getUsername());
-        if (userFromDB != null) {
+        Optional<User> userFromDB = userService.findByUsername(user.getUsername());
+        if (userFromDB.isPresent()) {
             return "redirect:/admin/error";
         }
         userService.save(user);
@@ -53,16 +55,16 @@ public class AdminController {
 
     @GetMapping("/admin/update")
     public String updateUser(@RequestParam("id") Long id, ModelMap model) {
-        User user = userService.findById(id);
+        Optional<User> user = userService.findById(id);
         model.addAttribute("roles", roleService.findAll());
-        model.addAttribute("user", user);
+        model.addAttribute("user", user.orElse(null));
         return "/admin/update";
     }
 
     @PostMapping("/admin/update")
     public String addUser(@ModelAttribute("user") User user, @RequestParam("id") Long id) {
-        User userFromDB = userService.findByUsername(user.getUsername());
-        if (userFromDB != null && !(userFromDB.getId().equals(id))) {
+        Optional<User> userFromDB = userService.findByUsername(user.getUsername());
+        if (userFromDB.isPresent() && !(userFromDB.get().getId().equals(id))) {
             return "redirect:/admin/error";
         }
         userService.update(id, user);

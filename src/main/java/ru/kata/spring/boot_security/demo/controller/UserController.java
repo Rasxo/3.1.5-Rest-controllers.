@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.util.Optional;
+
 @Controller
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class UserController {
@@ -20,8 +22,8 @@ public class UserController {
 
     @GetMapping(value = "/user")
     public String getUserPage(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
-        User user = userService.findByUsername(currentUser.getUsername());
-        model.addAttribute("user", user);
+        Optional<User> user = userService.findByUsername(currentUser.getUsername());
+        model.addAttribute("user", user.orElse(null));
         model.addAttribute("currentUser", currentUser);
         return "user";
     }
