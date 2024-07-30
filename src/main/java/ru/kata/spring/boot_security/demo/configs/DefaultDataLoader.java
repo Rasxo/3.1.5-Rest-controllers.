@@ -50,6 +50,18 @@ public class DefaultDataLoader implements ApplicationListener<ContextRefreshedEv
         user.setRoles(adminRoles);
         userService.save(user);
 
+        User user1 = new User();
+        user1.setFirstName("user");
+        user1.setLastName("user");
+        user1.setEmail("user@mail.ru");
+        user1.setUsername("user");
+        user1.setPassword("user");
+        List<Role> userRole = new ArrayList<>();
+        userRole.add(roleService.findByName("ROLE_USER").orElse(null));
+        user1.setRoles(userRole);
+        userService.save(user1);
+
+
         alreadyLoaded = true;
     }
 
