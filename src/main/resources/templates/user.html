@@ -10,22 +10,29 @@
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark">
-    <span class="navbar-text"
-          th:text="${#strings.concat(currentUser.getUsername(), ' with roles: ',
-           #strings.arrayJoin(currentUser.getAuthorities(),' '))}">
-    </span>
+    <div class="row navbar-text ml-1">
+        <div class="navbar-text d-inline text-white font-weight-bold h5"
+             th:text="${currentUser.getUsername()}">
+        </div>
+        <div class="navbar-text d-inline text-left text-white font-weight-normal h5"
+             th:text="' with roles: '">
+        </div>
+        <div class="navbar-text d-inline text-left text-white font-weight-normal h5"
+             th:text="${#strings.arrayJoin(currentUser.getAuthorities(),' ')}">
+        </div>
+    </div>
     <form class="form-inline" th:action="@{/logout}" method="post">
-        <button class="btn btn-link text-secondary" type="submit">Logout</button>
+        <button class="btn btn-link text-white-50" type="submit">Logout</button>
     </form>
 </nav>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-2 sidebar px-0">
+        <nav class="col-2 sidebar px-0 pt-3">
             <div class="sidebar-sticky">
                 <ul class="nav nav-pills flex-column">
                     <li class="nav-item">
-                        <!-- TODO подумать над другими вариантами, как сделать по другому-->
+                        <!-- TODO можно сделать с подключением в pom зависимости thymeleaf-extras-springsecurity6-->
                         <a class="nav-link" th:if="${#strings.contains(currentUser.getAuthorities(),'ROLE_ADMIN')}"
                            th:href="@{/admin}">Admin</a>
                     </li>
