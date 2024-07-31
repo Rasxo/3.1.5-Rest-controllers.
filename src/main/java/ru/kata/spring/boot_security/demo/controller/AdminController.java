@@ -23,7 +23,6 @@ public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
 
-
     public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
@@ -32,15 +31,10 @@ public class AdminController {
     @GetMapping(value = "/admin")
     public String printAllUsers(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("roles", roleService.findAll());
+        model.addAttribute("newUser", new User());
         model.addAttribute("currentUser", currentUser);
         return "admin";
-    }
-
-    @GetMapping("/admin/create")
-    public String addUser(ModelMap model) {
-        model.addAttribute("roles", roleService.findAll());
-        model.addAttribute("user", new User());
-        return "/admin/create";
     }
 
     @PostMapping("/admin/add")
@@ -53,17 +47,10 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/update")
-    public String updateUser(@RequestParam("id") Long id, ModelMap model) {
-        Optional<User> user = userService.findById(id);
-        model.addAttribute("roles", roleService.findAll());
-        model.addAttribute("user", user.orElse(null));
-        return "/admin/update";
-    }
-
     @PostMapping("/admin/update")
     public String addUser(@ModelAttribute("user") User user, @RequestParam("id") Long id) {
         Optional<User> userFromDB = userService.findByUsername(user.getUsername());
+        System.out.println(user);
         if (userFromDB.isPresent() && !(userFromDB.get().getId().equals(id))) {
             return "redirect:/admin/error";
         }
@@ -71,7 +58,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping(value = "/admin/delete")
+    @PostMapping(value = "/admin/delete")
     public String deleteUser(@RequestParam(name = "id") Long id) {
         userService.deleteById(id);
         return "redirect:/admin";
