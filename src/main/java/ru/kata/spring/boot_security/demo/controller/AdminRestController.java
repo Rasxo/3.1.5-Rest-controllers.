@@ -9,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import ru.kata.spring.boot_security.demo.dto.RoleDTO;
 import ru.kata.spring.boot_security.demo.dto.RoleResponse;
 import ru.kata.spring.boot_security.demo.dto.UserDTO;
 import ru.kata.spring.boot_security.demo.dto.UserResponse;
@@ -24,15 +23,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admin")
-public class DefaultRestController {
+@RequestMapping("/admin")
+public class AdminRestController {
     private final UserService userService;
 
     private final RoleService roleService;
 
     private final ModelMapper modelMapper;
 
-    public DefaultRestController(UserService userService, RoleService roleService, ModelMapper modelMapper) {
+    public AdminRestController(UserService userService, RoleService roleService, ModelMapper modelMapper) {
         this.userService = userService;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
@@ -40,25 +39,28 @@ public class DefaultRestController {
 
     @GetMapping("/current_user")
     public UserResponse getCurrentUser(@AuthenticationPrincipal User user) {
-        UserDTO result = convertToUserDTO(userService.findByUsername(user.getUsername()).orElseThrow(
+        UserDTO result = DTOConvertor.convertToUserDTO(userService.findByUsername(user.getUsername()).orElseThrow(
                 () -> new UserNotFoundException(
-                        String.format("Пользователь с username=%s не найден!", user.getUsername()))));
+                        String.format("Пользователь с username=%s не найден!", user.getUsername()))), modelMapper);
         return new UserResponse(List.of(result));
     }
 
     @GetMapping("/users")
     public UserResponse getAllUsers() {
-        return new UserResponse(userService.findAll().stream().map(this::convertToUserDTO).toList());
+        return new UserResponse(userService.findAll()
+                .stream().map(user -> DTOConvertor.convertToUserDTO(user, modelMapper)).toList());
     }
 
     @GetMapping("/user/{id}")
     public UserResponse getUserById(@PathVariable Long id) {
-        return new UserResponse(userService.findById(id).stream().map(this::convertToUserDTO).toList());
+        return new UserResponse(userService.findById(id)
+                .stream().map(user -> DTOConvertor.convertToUserDTO(user, modelMapper)).toList());
     }
 
     @GetMapping("/roles")
     private RoleResponse getAllRoles() {
-        return new RoleResponse(roleService.findAll().stream().map(this::convertToRoleDTO).toList());
+        return new RoleResponse(roleService.findAll()
+                .stream().map(role -> DTOConvertor.convertToRoleDTO(role, modelMapper)).toList());
     }
 
     @DeleteMapping("/user/{id}")
@@ -82,7 +84,7 @@ public class DefaultRestController {
 
         userDTO.setRoles(roles);
 
-        userService.save(convertToUser(userDTO));
+        userService.save(DTOConvertor.convertToUser(userDTO, modelMapper));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -91,7 +93,7 @@ public class DefaultRestController {
                                                  @RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         Optional<User> verifyUser = userService.findByUsername(userDTO.getUsername());
         if (verifyUser.isPresent() && !(verifyUser.get().getId().equals(id))) {
-           addError(bindingResult, userDTO.getUsername());
+            addError(bindingResult, userDTO.getUsername());
         }
 
         if (bindingResult.hasErrors()) {
@@ -103,7 +105,7 @@ public class DefaultRestController {
 
         userDTO.setRoles(roles);
 
-        userService.update(id, convertToUser(userDTO));
+        userService.update(id, DTOConvertor.convertToUser(userDTO, modelMapper));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -141,20 +143,9 @@ public class DefaultRestController {
         }
         return errors.toString();
     }
+
     private void addError(BindingResult bindingResult, String errorField) {
         bindingResult.addError(new FieldError("user", errorField,
                 "уже существует в базе данных"));
-    }
-
-    private User convertToUser(UserDTO userDTO) {
-        return modelMapper.map(userDTO, User.class);
-    }
-
-    private UserDTO convertToUserDTO(User user) {
-        return modelMapper.map(user, UserDTO.class);
-    }
-
-    private RoleDTO convertToRoleDTO(Role role) {
-        return modelMapper.map(role, RoleDTO.class);
     }
 }
